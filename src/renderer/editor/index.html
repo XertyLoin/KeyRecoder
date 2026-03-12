@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KeyRecoder Editor</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- ── Custom Draggable Titlebar ──────────────────────────────────── -->
+    <header class="titlebar" id="titlebar">
+        <div class="titlebar-left">
+            <svg viewBox="0 0 36 36" width="20" height="20" fill="none">
+                <rect x="2" y="2" width="32" height="32" rx="9" fill="url(#lg2)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+                <rect x="7" y="13" width="6" height="6" rx="2" fill="rgba(255,255,255,0.85)"/>
+                <rect x="15" y="13" width="6" height="6" rx="2" fill="rgba(255,255,255,0.45)"/>
+                <rect x="23" y="13" width="6" height="6" rx="2" fill="rgba(255,255,255,0.85)"/>
+                <rect x="7" y="21" width="22" height="6" rx="2" fill="rgba(255,255,255,0.35)"/>
+                <defs>
+                    <linearGradient id="lg2" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                        <stop stop-color="#2a2a38"/>
+                        <stop offset="1" stop-color="#1a1a24"/>
+                    </linearGradient>
+                </defs>
+            </svg>
+            <span>KeyRecoder</span>
+        </div>
+        <div class="titlebar-actions">
+            <button id="tb-min" class="tb-btn" title="Minimize">─</button>
+            <button id="tb-close" class="tb-btn tb-close" title="Close">✕</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- ── Sidebar ──────────────────────────────────────────────────── -->
+        <aside class="sidebar">
+
+            <!-- TOOLS -->
+            <p class="section-label">TOOLS</p>
+            <button id="add-key-btn" class="tool-btn">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M7 1.5v11M1.5 7h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Add Key
+            </button>
+
+            <!-- PROPERTIES -->
+            <p class="section-label" style="margin-top:22px">PROPERTIES</p>
+
+            <div id="no-selection-msg" class="empty-state">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none" opacity="0.3">
+                    <rect x="2" y="2" width="9" height="9" rx="2.5" fill="white"/>
+                    <rect x="17" y="2" width="9" height="9" rx="2.5" fill="white"/>
+                    <rect x="2" y="17" width="24" height="9" rx="2.5" fill="white"/>
+                </svg>
+                <p>Select a key to edit</p>
+            </div>
+
+            <div id="properties-panel" class="properties-panel hidden">
+                <div class="form-group">
+                    <label>Label</label>
+                    <input type="text" id="prop-label" placeholder="e.g. CTRL" maxlength="10"/>
+                </div>
+
+                <div class="form-group">
+                    <label>Assigned Physical Key</label>
+                    <button id="prop-assign-btn" class="assign-btn">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                            <path d="M6.5 1v5M4 3.5l2.5-2.5 2.5 2.5M1.5 9h10v.5a2 2 0 01-2 2h-6a2 2 0 01-2-2V9z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                        </svg>
+                        <span id="assign-text">Press to assign key…</span>
+                    </button>
+                    <small id="prop-keycode-display" class="keycode-info"></small>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>Pos X (Units)</label>
+                        <input type="number" id="prop-x" min="0" step="1"/>
+                    </div>
+                    <div class="form-group half">
+                        <label>Pos Y (Units)</label>
+                        <input type="number" id="prop-y" min="0" step="1"/>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group half">
+                        <label>Width (Units)</label>
+                        <input type="number" id="prop-width" min="1" max="50" step="1"/>
+                    </div>
+                    <div class="form-group half">
+                        <label>Height (Units)</label>
+                        <input type="number" id="prop-height" min="1" max="50" step="1"/>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Custom Image</label>
+                    <div class="image-input-row">
+                        <input type="text" id="prop-image" placeholder="file:///path..."/>
+                        <button id="browse-image-btn" class="browse-btn">
+                            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                                <path d="M1 10.5V4a1 1 0 011-1h3l1.5-2H11a1 1 0 011 1v8.5a1 1 0 01-1 1H2a1 1 0 01-1-1z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div id="image-preview-container" class="image-preview hidden">
+                        <img id="image-preview" src="" alt="preview"/>
+                    </div>
+                </div>
+
+                <button id="prop-delete-btn" class="danger-btn">
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                        <path d="M1.5 3h10M4.5 3V2h4v1M3.5 3l.5 8h5l.5-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Delete Key
+                </button>
+            </div>
+
+            <!-- OVERLAY POSITION -->
+            <p class="section-label" style="margin-top:22px">OVERLAY POSITION</p>
+            <div class="form-row">
+                <div class="form-group half">
+                    <label>Screen X</label>
+                    <input type="number" id="overlay-x" value="100" min="0"/>
+                </div>
+                <div class="form-group half">
+                    <label>Screen Y</label>
+                    <input type="number" id="overlay-y" value="100" min="0"/>
+                </div>
+            </div>
+            <button id="move-overlay-btn" class="tool-btn" style="margin-top:8px">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <path d="M6.5 1v11M1 6.5h11M3.5 4L1 6.5l2.5 2.5M9.5 4L12 6.5 9.5 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Move Overlay
+            </button>
+
+            <!-- OBS MODE -->
+            <p class="section-label" style="margin-top:22px">CAPTURE SOFTWARE</p>
+            <div class="obs-panel">
+                <div class="obs-toggle-row">
+                    <span>Hide Electron overlay (use browser source)</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="obs-mode-toggle"/>
+                        <span class="toggle-track"></span>
+                    </label>
+                </div>
+                <div class="obs-url-row">
+                    <code id="obs-url-display">http://localhost:4242</code>
+                    <button id="copy-obs-url-btn" class="copy-btn" title="Copy URL">
+                        <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                            <rect x="4" y="1" width="8" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/>
+                            <path d="M1 4v7a1 1 0 001 1h7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <p class="obs-hint">Add a <strong>Browser Source</strong> in OBS/Streamlabs with this URL. Background will be transparent.</p>
+            </div>
+
+            <!-- APPLY -->
+            <div class="bottom-actions">
+                <button id="apply-btn" class="primary-btn">
+                    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                        <path d="M2 7.5l4 4 7-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Apply Layout
+                </button>
+            </div>
+        </aside>
+
+        <!-- ── Canvas Area ───────────────────────────────────────────────── -->
+        <main class="canvas-area">
+            <div class="canvas-hint">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                    <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/>
+                    <path d="M6.5 5v3M6.5 4v.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Drag keys to reposition them
+            </div>
+            <div id="editor-canvas" class="editor-canvas"></div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

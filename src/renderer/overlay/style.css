@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --accent: #7eb8c9;
+    --border: rgba(255, 255, 255, 0.12);
+    --text-muted: rgba(255, 255, 255, 0.4);
+}
+
+body {
+    background-color: transparent;
+    overflow: hidden;
+    -webkit-user-select: none;
+    user-select: none;
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+}
+
+#overlay-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+.key-element {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 62px;
+    height: 62px;
+
+    /* Glass base */
+    background: rgba(15, 15, 20, 0.55);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+
+    /* Border & shape */
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-bottom: 3px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+
+    /* Text */
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+
+    /* Shadow */
+    box-shadow:
+        0 6px 20px rgba(0, 0, 0, 0.35),
+        0 1px 0px rgba(255,255,255,0.05) inset;
+
+    /* Animation */
+    transition: 
+        background 0.08s ease,
+        transform 0.06s cubic-bezier(0.34, 1.56, 0.64, 1),
+        box-shadow 0.08s ease,
+        border-color 0.08s ease,
+        color 0.08s ease;
+
+    will-change: transform, background;
+}
+
+.key-element.active {
+    background: rgba(255, 255, 255, 0.88);
+    color: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.95);
+    border-bottom-width: 1px;
+    transform: translateY(3px) scale(0.95);
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.3),
+        0 0 25px rgba(255, 255, 255, 0.15),
+        inset 0 2px 5px rgba(0, 0, 0, 0.2);
+    text-shadow: none;
+}
+
+/* Background image keys */
+.key-element[style*="background-image"] {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+/* ── Move Mode ───────────────────────────────────────────── */
+body.move-mode {
+    cursor: move;
+}
+
