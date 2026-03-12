@@ -145,7 +145,7 @@ function createEditor() {
 
 // ── Tray ──────────────────────────────────────────────────────────────────
 function setupTray() {
-  const iconPath = path.join(__dirname, '../assets/tray_icon.png');
+  const iconPath = path.join(__dirname, '..', 'assets', 'tray_icon.png');
   tray = new Tray(iconPath);
 
   const contextMenu = Menu.buildFromTemplate([
