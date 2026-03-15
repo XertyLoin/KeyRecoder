@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
   // Key events (overlay + editor)
@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getWindowPosition: () => ipcRenderer.invoke('get-window-position'),
 
   // General
+  getFilePath: (file) => webUtils.getPathForFile(file),
   openEditor:  () => ipcRenderer.send('open-editor'),
   hideOverlay: () => ipcRenderer.send('hide-overlay'),
   quitApp:     () => ipcRenderer.send('quit-app'),

@@ -334,7 +334,8 @@ browseBtn.addEventListener('click', () => {
         if (!file) return;
         
         // Import file to AppData
-        const fileName = await window.electronAPI.importImage(file.path);
+        const filePath = window.electronAPI.getFilePath(file);
+        const fileName = await window.electronAPI.importImage(filePath);
         const uri = `http://localhost:4242/images/${fileName}`;
 
         const k = keysConfig.find(k => k.id === selectedKeyId);
