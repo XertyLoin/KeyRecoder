@@ -17,13 +17,6 @@
     "win": {
       "target": "nsis"
     },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "category": "Utility"
-    },
     "files": [
       "src/**/*",
       "assets/**/*",
