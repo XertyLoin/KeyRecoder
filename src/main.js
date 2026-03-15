@@ -244,6 +244,27 @@ app.whenReady().then(() => {
     return fileName; // return just the filename
   });
 
+  ipcMain.handle('get-layouts', () => store.get('layouts') || []);
+
+  ipcMain.handle('save-layout', (event, layout) => {
+    const layouts = store.get('layouts') || [];
+    const index = layouts.findIndex(l => l.id === layout.id);
+    if (index !== -1) {
+      layouts[index] = layout;
+    } else {
+      layouts.push(layout);
+    }
+    store.set('layouts', layouts);
+    return true;
+  });
+
+  ipcMain.handle('delete-layout', (event, layoutId) => {
+    let layouts = store.get('layouts') || [];
+    layouts = layouts.filter(l => l.id !== layoutId);
+    store.set('layouts', layouts);
+    return true;
+  });
+
   // Window drag & control (Generic for any window)
   ipcMain.handle('get-window-position', (event) => {
     const win = BrowserWindow.fromWebContents(event.sender);

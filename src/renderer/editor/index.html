@@ -44,6 +44,12 @@
                 </svg>
                 Add Key
             </button>
+            <button id="open-library-btn" class="tool-btn secondary">
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path d="M2 1h10a1 1 0 011 1v10a1 1 0 01-1 1H2a1 1 0 01-1-1V2a1 1 0 011-1zM4 1v12M8 1v12" stroke="currentColor" stroke-width="1.5"/>
+                </svg>
+                Library
+            </button>
 
             <!-- PROPERTIES -->
             <p class="section-label" style="margin-top:22px">PROPERTIES</p>
@@ -182,6 +188,47 @@
             </div>
             <div id="editor-canvas" class="editor-canvas"></div>
         </main>
+    </div>
+
+    <!-- ── Fullscreen Library Overlay ────────────────────────────────── -->
+    <div id="library-overlay" class="library-overlay hidden">
+        <div class="library-content">
+            <header class="library-header">
+                <h2>Layout Library</h2>
+                <button id="close-library-btn" class="back-link">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M1 7h12M1 7l3-3M1 7l3 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Back to Editor
+                </button>
+            </header>
+
+            <div class="library-actions">
+                <button id="save-current-layout-btn" class="primary-btn">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M1 7h12M7 1v12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Save Current Layout
+                </button>
+            </div>
+
+            <div id="layouts-list" class="layouts-grid">
+                <!-- Layout cards will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Input Modal (Replacement for prompt) ────────────────────── -->
+    <div id="input-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h3>Save Layout</h3>
+            <p>Enter a name for this configuration:</p>
+            <input type="text" id="modal-input" placeholder="e.g. My Pro Config" maxlength="30"/>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="back-link">Cancel</button>
+                <button id="modal-confirm-btn" class="primary-btn small">Save</button>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

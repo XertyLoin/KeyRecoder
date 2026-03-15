@@ -35,6 +35,19 @@ const tbMin         = document.getElementById('tb-min');
 const tbClose       = document.getElementById('tb-close');
 const titlebar      = document.getElementById('titlebar');
 
+// Library Elements
+const openLibraryBtn = document.getElementById('open-library-btn');
+const closeLibraryBtn = document.getElementById('close-library-btn');
+const libraryOverlay = document.getElementById('library-overlay');
+const saveLayoutBtn  = document.getElementById('save-current-layout-btn');
+const layoutsList    = document.getElementById('layouts-list');
+
+// Modal Elements
+const inputModal    = document.getElementById('input-modal');
+const modalInput    = document.getElementById('modal-input');
+const modalCancel   = document.getElementById('modal-cancel-btn');
+const modalConfirm  = document.getElementById('modal-confirm-btn');
+
 // ── Audio Engine ─────────────────────────────────────────────────────────────
 const actx = new (window.AudioContext || window.webkitAudioContext)();
 
@@ -423,6 +436,119 @@ applyBtn.addEventListener('click', async () => {
         </svg> Apply Layout`;
     }, 1800);
 });
+
+// ── Library Logic ─────────────────────────────────────────────────────────────
+openLibraryBtn.addEventListener('click', () => {
+    sndClick();
+    libraryOverlay.classList.remove('hidden');
+    renderLayouts();
+});
+
+closeLibraryBtn.addEventListener('click', () => {
+    sndClick();
+    libraryOverlay.classList.add('hidden');
+});
+
+saveLayoutBtn.addEventListener('click', () => {
+    sndApply();
+    modalInput.value = "";
+    inputModal.classList.remove('hidden');
+    modalInput.focus();
+});
+
+modalCancel.addEventListener('click', () => {
+    sndClick();
+    inputModal.classList.add('hidden');
+});
+
+modalConfirm.addEventListener('click', async () => {
+    const name = modalInput.value.trim();
+    if (!name) return;
+
+    sndApply();
+    
+    const newLayout = {
+        id: 'layout_' + Date.now(),
+        name: name,
+        settings: {
+            keys: keysConfig,
+            overlayX: parseInt(overlayXInput.value) || 0,
+            overlayY: parseInt(overlayYInput.value) || 0
+        },
+        timestamp: Date.now()
+    };
+
+    await window.electronAPI.saveLayout(newLayout);
+    inputModal.classList.add('hidden');
+    renderLayouts();
+});
+
+// Allow Enter key to confirm modal
+modalInput.addEventListener('keydown', e => {
+    if (e.key === 'Enter') modalConfirm.click();
+    if (e.key === 'Escape') modalCancel.click();
+});
+
+async function renderLayouts() {
+    const layouts = await window.electronAPI.getLayouts();
+    layoutsList.innerHTML = '';
+
+    if (layouts.length === 0) {
+        layoutsList.innerHTML = '<p class="empty-state">No layouts saved yet.</p>';
+        return;
+    }
+
+    layouts.sort((a,b) => b.timestamp - a.timestamp).forEach(l => {
+        const card = document.createElement('div');
+        card.className = 'layout-card';
+        
+        const dateStr = new Date(l.timestamp).toLocaleDateString();
+        const keyCount = l.settings?.keys?.length || 0;
+
+        card.innerHTML = `
+            <h3>${l.name}</h3>
+            <div class="layout-meta">
+                <span>${dateStr}</span>
+                <span>${keyCount} keys</span>
+            </div>
+            <div class="layout-card-actions">
+                <button class="load-btn" data-id="${l.id}">Load Layout</button>
+                <button class="del-icon-btn" data-id="${l.id}">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M1.5 3h11M4.5 3V2h4v1M3.5 3l.5 8h5l.5-8" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        `;
+
+        card.querySelector('.load-btn').addEventListener('click', () => loadLayout(l));
+        card.querySelector('.del-icon-btn').addEventListener('click', () => deleteLayout(l.id));
+
+        layoutsList.appendChild(card);
+    });
+}
+
+function loadLayout(layout) {
+    sndSnap();
+    keysConfig = layout.settings.keys;
+    overlayXInput.value = layout.settings.overlayX;
+    overlayYInput.value = layout.settings.overlayY;
+    
+    selectedKeyId = null;
+    renderCanvas();
+    updatePanel();
+    libraryOverlay.classList.add('hidden');
+    
+    // Auto-apply to overlay
+    applyBtn.click();
+}
+
+async function deleteLayout(id) {
+    if (!confirm("Are you sure you want to delete this layout?")) return;
+    sndDelete();
+    await window.electronAPI.deleteLayout(id);
+    renderLayouts();
+}
 
 // ── Start ─────────────────────────────────────────────────────────────────────
 init();

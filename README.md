@@ -21,6 +21,10 @@
   - Serveur local intégré servant une version optimisée pour les sources navigateurs OBS.
   - Mode "Capture Software" pour masquer l'overlay local et ne garder que la source OBS.
 - 🖱️ **Mouvement Libres** : Déplacez l'overlay directement à la souris et verrouillez sa position instantanément.
+- 📚 **Bibliothèque de Layouts** : 
+  - Sauvegardez plusieurs configurations différentes.
+  - Basculez instantanément entre vos layouts (ex: un layout par jeu).
+  - Gestion plein écran avec interface premium.
 
 ---
 

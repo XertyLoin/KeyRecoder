@@ -28,6 +28,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setWindowPosition: (x, y) => ipcRenderer.send('set-window-position', { x, y }),
   getWindowPosition: () => ipcRenderer.invoke('get-window-position'),
 
+  // Layout Library
+  getLayouts:   () => ipcRenderer.invoke('get-layouts'),
+  saveLayout:   (l) => ipcRenderer.invoke('save-layout', l),
+  deleteLayout: (id) => ipcRenderer.invoke('delete-layout', id),
+
   // General
   getFilePath: (file) => webUtils.getPathForFile(file),
   openEditor:  () => ipcRenderer.send('open-editor'),
