@@ -33,29 +33,40 @@ function startObsServer() {
   if (obsServer) return;
   obsServer = http.createServer((req, res) => {
     const rendererDir = path.join(__dirname, 'renderer', 'overlay');
+    const userDataDir = path.join(app.getPath('userData'), 'custom_images');
 
-    // Serve the overlay page (and its assets)
+    // Ensure directory exists
+    if (!fs.existsSync(userDataDir)) fs.mkdirSync(userDataDir, { recursive: true });
+
     let filePath;
     if (req.url === '/' || req.url === '/index.html') {
       filePath = path.join(rendererDir, 'index.html');
     } else if (req.url === '/style.css') {
       filePath = path.join(rendererDir, 'style.css');
     } else if (req.url === '/script.js') {
-      filePath = path.join(rendererDir, 'obs-script.js'); // lightweight polling version
+      filePath = path.join(rendererDir, 'obs-script.js');
+    } else if (req.url.startsWith('/images/')) {
+      const fileName = path.basename(req.url);
+      filePath = path.join(userDataDir, fileName);
     } else {
-      res.writeHead(404);
-      res.end('Not found');
-      return;
+      res.writeHead(404); res.end('Not found'); return;
     }
 
     const ext = path.extname(filePath);
-    const mime = { '.html':'text/html', '.css':'text/css', '.js':'application/javascript' };
+    const mime = { 
+      '.html':'text/html', 
+      '.css':'text/css', 
+      '.js':'application/javascript',
+      '.png':'image/png',
+      '.jpg':'image/jpeg',
+      '.jpeg':'image/jpeg',
+      '.gif':'image/gif'
+    };
     try {
       res.writeHead(200, { 'Content-Type': mime[ext] || 'text/plain' });
       res.end(fs.readFileSync(filePath));
     } catch {
-      res.writeHead(404);
-      res.end('Not found');
+      res.writeHead(404); res.end('Not found');
     }
   });
   obsServer.listen(OBS_PORT);
@@ -109,6 +120,7 @@ function createOverlay() {
     alwaysOnTop: true,
     skipTaskbar: false,
     hasShadow: false,
+    icon: path.join(__dirname, '..', 'assets', 'tray_icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -129,9 +141,10 @@ function createEditor() {
     width: 940,
     height: 720,
     minWidth: 700,
-    frame: false,           // We handle our own custom titlebar
-    resizable: false,       // Prevent resizing glitch while moving
+    frame: false,
+    resizable: false,
     transparent: false,
+    icon: path.join(__dirname, '..', 'assets', 'tray_icon.png'),
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -215,6 +228,17 @@ app.whenReady().then(() => {
   ipcMain.on('open-editor', createEditor);
   ipcMain.on('hide-overlay', () => { if (overlayWindow) overlayWindow.close(); });
   ipcMain.on('quit-app', () => app.quit());
+
+  ipcMain.handle('import-image', async (event, sourcePath) => {
+    const userDataDir = path.join(app.getPath('userData'), 'custom_images');
+    if (!fs.existsSync(userDataDir)) fs.mkdirSync(userDataDir, { recursive: true });
+
+    const fileName = `img_${Date.now()}${path.extname(sourcePath)}`;
+    const destPath = path.join(userDataDir, fileName);
+    
+    fs.copyFileSync(sourcePath, destPath);
+    return fileName; // return just the filename
+  });
 
   // Window drag & control (Generic for any window)
   ipcMain.handle('get-window-position', (event) => {

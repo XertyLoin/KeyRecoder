@@ -329,10 +329,14 @@ browseBtn.addEventListener('click', () => {
     sndClick();
     const input = document.createElement('input');
     input.type = 'file'; input.accept = 'image/*';
-    input.onchange = e => {
+    input.onchange = async e => {
         const file = e.target.files[0];
         if (!file) return;
-        const uri = `file:///${file.path.replace(/\\/g,'/')}`;
+        
+        // Import file to AppData
+        const fileName = await window.electronAPI.importImage(file.path);
+        const uri = `http://localhost:4242/images/${fileName}`;
+
         const k = keysConfig.find(k => k.id === selectedKeyId);
         if (!k) return;
         k.image = uri;

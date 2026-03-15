@@ -11,7 +11,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   saveSettings: (s) => ipcRenderer.invoke('save-settings', s),
 
   // OBS
-  getObsUrl: () => ipcRenderer.invoke('get-obs-url'),
+  getObsUrl:   () => ipcRenderer.invoke('get-obs-url'),
+  importImage: (path) => ipcRenderer.invoke('import-image', path),
 
   // Overlay control
   moveOverlay:            (x, y) => ipcRenderer.send('move-overlay', { x, y }),
