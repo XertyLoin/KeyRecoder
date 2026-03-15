@@ -1,6 +1,6 @@
 {
   "name": "keyrecoder",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "description": "Stylish and lightweight input overlay for OBS and desktop use, supporting Windows and Linux.",
   "main": "src/main.js",
   "scripts": {
