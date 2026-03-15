@@ -344,6 +344,11 @@ browseBtn.addEventListener('click', () => {
         updateImagePreview(uri);
         renderCanvas();
         sndSnap();
+
+        // Immediate persistence for styles
+        const settings = await window.electronAPI.getSettings() || {};
+        settings.keys = keysConfig;
+        await window.electronAPI.saveSettings(settings);
     };
     input.click();
 });

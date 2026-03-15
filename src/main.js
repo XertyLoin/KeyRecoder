@@ -1,4 +1,5 @@
 const { app, BrowserWindow, Tray, Menu, ipcMain } = require('electron');
+const { autoUpdater } = require("electron-updater");
 const path = require('path');
 const http = require('http');
 const fs   = require('fs');
@@ -182,6 +183,9 @@ app.whenReady().then(() => {
   createOverlay();
   startObsServer();
   startSseServer();
+  
+  // Auto-updater check
+  autoUpdater.checkForUpdatesAndNotify();
 
   // ── IPC handlers ───────────────────────────────────────────────────────
   ipcMain.handle('get-settings', () => store.get('settings'));
